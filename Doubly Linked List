@@ -1,0 +1,304 @@
+#include<iostream>
+using namespace std;
+
+template <class dt>
+
+
+class DoublyLinkedList {
+private:
+	struct Node
+	{
+		Node* previous;
+		dt value;
+		Node* Next;
+	};
+	Node* first;
+	Node* last;
+	int length = 0;
+public:
+									/*______Essentaails______*/
+
+	DoublyLinkedList() {
+		first = last = NULL;
+	}
+
+	bool isEmpty() {
+		return first == NULL;
+	}
+
+	int size() {
+		return length;
+	}
+									/*______Insertion______*/
+	void insertF(dt val) {
+		Node* newNode = new Node;
+		newNode->value = val;
+		if (isEmpty()) {
+			newNode->Next = NULL;
+			newNode->previous = NULL;
+			first = last = newNode;
+		}
+		else {
+			newNode->Next = first;
+			first->previous = newNode;
+			newNode->previous = NULL;
+			first = newNode;
+		}
+		length++;
+	}
+
+	void insertL(dt val) {
+		Node* newNode = new Node;
+		newNode->value = val;
+
+		if (isEmpty()) {
+			newNode->Next = NULL;
+			newNode->previous = NULL;
+			first = last = newNode;
+		}
+		else {
+			newNode->previous = last;
+			last->Next = newNode;
+			newNode->Next = NULL;
+			last = newNode;
+
+		}
+		length++;
+
+	}
+
+	void insertAt(int index, dt val) {
+		if (index == 0) {
+			insertF(val);
+		}
+		else if (index == length) {
+			insertL(val);
+		}
+		else {
+			Node* current = first;
+			Node* newNode = new Node;
+			newNode->value = val;
+			for (int i = 1; i < index; i++) {
+				current = current->Next;
+			}
+			newNode->Next = current->Next;
+			newNode->previous = current;
+			current->Next->previous = newNode;
+			current->Next = newNode;
+			length++;
+		}
+	}
+
+										/*______Delete______*/
+
+	void removeF() {
+		if (isEmpty())
+			return;
+		else if (length == 1) {
+			delete first;
+			first = last = NULL;
+		}
+		else {
+			Node* temp = first;
+			first = first->Next;
+			first->previous = NULL;
+			free(temp);
+		}
+		length--;
+	}
+
+	void removeL() {
+		if (isEmpty()) {
+			return;
+		}
+
+		else if (length == 1) {
+			free(first);
+			first = last = NULL;
+		}
+
+		else {
+			Node* current = last;
+			last = last->previous;
+			last->Next = NULL;
+			free(current);
+		}
+		length--;
+	}
+
+	void remove(int index) {
+		if (index >= length || index < 0) {
+			cout << "index out of boundaries" << endl;
+			return;
+		}
+		if (index == 0) {
+			removeF();
+			return;
+		}
+		else if (index == length - 1) {
+			removeL();
+			return;
+		}
+
+		if (index <= length / 2) {
+			Node* current = first;
+			while (index--) {
+				current = current->Next;
+			}
+			current->previous->Next = current->Next;
+			current->Next->previous = current->previous;
+			free(current);
+		}
+		else {
+			Node* current = last;
+			index = length - (index + 1);
+			while (index--) {
+				current = current->previous;
+			}
+			current->previous->Next = current->Next;
+			current->Next->previous = current->previous;
+			free(current);
+		}
+
+		length--;
+	}
+
+	void removeByElement(dt element) {
+		Node* current = first;
+		int index = 0;
+		while (current != NULL) {
+			if (current->value == element) {
+				remove(index);
+				return;
+			}
+			current = current->Next;
+			index++;
+		}
+		cout << "item not found" << endl;
+		return;
+		
+	}
+
+	void removeAllOf(dt val) {
+		int index = 0;
+
+		Node* curr = first;
+		Node* next = first->Next;
+
+		do {
+			if (curr->value == val) {
+				remove(index);
+				index--;
+			}
+
+
+
+			curr = next;
+			next = next->Next;
+			index++;
+		} while (curr->Next != NULL);
+
+		if (last->value == val)
+			removeL();
+	}
+
+									/*_____Finding Elements_____*/
+	dt operator[](int index) {
+		if (index < 0 || index >= length) {
+			cout << "Out of Boundaries" << endl;
+			return NULL;
+		}
+		Node* current = first;
+		while (index--) {
+			current = current->Next;
+		}
+		return current->value;
+	}
+
+	int firstIndexOf(dt element) {
+		int index = 0;
+		Node* current = first;
+		while (current != NULL) {
+			if (current->value == element)
+				return index;
+			current = current->Next;
+			index++;
+		}
+		return -1;
+	
+	}
+
+	int lastIndexOf(dt element) {
+		int index = -1;
+		Node* current = first;
+		int c = 0;
+		while (current != NULL) {
+			if (current->value == element)
+				index = c;
+			current = current->Next;
+			c++;
+		}
+
+		return index;
+
+	}
+
+	dt getHead() {
+		return last->value;
+	}
+
+	dt getTail() {
+		return first->value;
+	}
+
+
+
+
+
+							/*______________print functions______________*/
+	void print() {
+		if (isEmpty()) {
+			cout << "nothing to print";
+		}
+		int temp = length;
+		Node* current = first;
+		while (temp--) {
+			cout << current->value << " ";
+			current = current->Next;
+		}
+		cout << endl;
+	}
+
+	void printReversed() {
+		if (isEmpty()) {
+			cout << "nothing to print";
+		}
+		int temp = length;
+		Node* current = last;
+
+		while (temp--) {
+			cout << current->value << " ";
+			current = current->previous;
+		}
+		cout << endl;
+	}
+};
+
+
+int main() {
+
+	DoublyLinkedList <char> dll1;
+	dll1.insertF('a');
+	dll1.insertF('b');
+	dll1.insertF('c');
+	dll1.insertF('d');
+	dll1.insertF('e');
+	dll1.insertF('f');
+	dll1.insertF('g');
+
+	cout << dll1[0];
+
+
+
+	return 0;
+}
