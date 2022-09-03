@@ -1,0 +1,273 @@
+#include<iostream>
+#include<functional>
+using namespace std;
+
+template <class dt>
+
+
+class LinkedList {
+private:
+    struct Node {
+        dt value;
+        Node* Link;
+    };
+    int length = 0;
+    Node* head, * tail;
+public:
+
+                                    /*______Essentials______*/
+    LinkedList() {
+        head = tail = NULL;
+    }
+
+    bool isEmpty() {
+        return head == NULL;
+    }
+
+    int size() {
+        return length;
+    }
+
+                                /*______Insert Elements______*/
+
+    void insertF(dt element) {
+        Node* newNode = new Node;
+        newNode->value = element;
+
+        if (isEmpty()) {
+            head = tail = newNode;
+            newNode->Link = NULL;
+        }
+
+        else if (length == 1) {
+            tail = newNode;
+            newNode->Link = head;
+        }
+        else {
+            newNode->Link = tail;
+            tail = newNode;
+        }
+        length++;
+    }
+
+    void insertL(dt element) {
+        Node* newNode = new Node;
+        newNode->value = element;
+        newNode->Link = NULL;
+        if (length == 0) {
+            head = tail = newNode;
+        }
+        else {
+            head->Link = newNode;
+            head = newNode;
+
+        }
+        length++;
+    }
+
+    void insertAt(int index, dt element) {
+
+
+        if (index == 0) { insertF(element); }
+        else if (index < 0 || index > length) {
+            cout << "Out of range";
+            return;
+        }
+        else if (index == length) { insertL(element); }
+
+        else {
+            Node* newNode = new Node;
+            newNode->value = element;
+            Node* current = tail;
+            index -= 1;
+            while (index--) {
+                current = current->Link;
+            }
+            newNode->Link = current->Link;
+            current->Link = newNode;
+            length++;
+        }
+
+    }
+
+    /*______Find / Access Elements______*/
+    dt operator[](int index) {
+        if (index == 0) {
+            return tail->value;
+        }
+        Node* current = tail;
+        while (index--) {
+            current = current->Link;
+        }
+        dt v = current->value;
+        return v;
+    }
+
+    dt getHead() {
+        return head->value;
+    }
+
+    dt getTail() {
+        return tail->value;
+    }
+
+    int FirstIndexOf(dt val) {
+        Node* current = tail;
+        for (int i = 0; i < length; i++) {
+            if (current->value == val) {
+                return i;
+            }
+            current = current->Link;
+        }
+        return -1;
+    }
+
+
+    /*______Remove Elements______*/
+
+
+    void removeF() { // tail side
+        if (isEmpty())
+            return;
+        else if (length == 1) {
+            Node* temp = tail;
+            free(temp);
+            tail = head = NULL;
+        }
+        else {
+            Node* temp = tail;
+            tail = tail->Link;
+            free(temp);
+        }
+        length--;
+
+    }
+
+    void removeL() { // head side
+        if (isEmpty())
+            return;
+        else if (length == 1) {
+            Node* temp = tail;
+            tail = head = NULL;
+            free(temp);
+        }
+        else {
+            Node* current = tail;
+            Node* previous = current;
+            while (current->Link != NULL) {
+                previous = current;
+                current = current->Link;
+            }
+            head = previous;
+            free(current);
+        }
+        length--;
+    }
+
+    void removeAt(int index) {
+        if (index == 0)
+            removeF();
+        else if (index == length) {
+            removeL();
+        }
+        else {
+
+            Node* current = tail;
+            Node* previous = current;
+            while (index--) {
+                previous = current;
+                current = current->Link;
+            }
+            previous->Link = current->Link;
+            free(current);
+            length--;
+
+        }
+
+    }
+
+    void removeAllOf(dt val) {
+        int index = 0;
+        int temp = length;
+        Node* curr = tail;
+        Node* next = tail->Link;
+
+
+
+        do {
+            if (curr->value == val) {
+                removeAt(index);
+                index--;
+            }
+
+            curr = next;
+            next = next->Link;
+            index++;
+        } while (curr->Link != NULL);
+
+        if (head->value == val)
+            removeL();
+    }
+
+
+
+
+                                        /*______Print functions______*/
+
+    void print() {
+        Node* current = tail;
+        int temp = length;
+        while (temp--) {
+            cout << current->value << " ";
+            current = current->Link;
+        }
+        cout << endl;
+    }
+
+                                            /*______reverse______*/
+
+    void reverse() {
+        Node* p = NULL;
+        Node* c = tail;
+        Node* n = tail->Link;
+        int t = length-2;
+        while (t--) {
+            c->Link = p;
+            p = c;
+            c = n;
+            n = n->Link;
+        }
+        c->Link = p;
+        p = c;
+        c = n;
+        n = NULL;
+
+        c->Link = p;
+
+
+        Node* temp = tail;
+        tail = head;
+        head= temp;
+    }
+
+
+
+};
+
+
+
+
+
+
+int main() {
+
+    LinkedList <double> ll1;
+    ll1.insertF(1);
+    ll1.insertF(2);
+    ll1.removeL();
+    ll1.removeL();
+    ll1.removeL();
+    ll1.removeL();
+    cout << ll1.size();
+    return 0;
+}
