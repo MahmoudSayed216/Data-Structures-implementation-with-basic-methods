@@ -1,0 +1,415 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+
+
+template<class dt>
+
+// NOTE 1:   most, if not all of the methods where the root is given as a parameter are to ensure that the recursion works with an address for each cycle
+// NOTE 2:	 some methods are written within the private scope, so the user (programmer) cant have access to them
+// NOTE 3:   there are shorter yet more complex implementations of the delete method, the one in this code is more detailed
+
+
+class BinaryTree {
+private:
+	struct Node
+	{
+		dt value;
+		Node* right;
+		Node* left;
+
+		Node(dt value) {			// constructor
+			this->value = value;	// "this" refers to the object... so this lines means, the value of the object is equal to the value passed (the one in the brackets)
+			right = nullptr;
+			left = nullptr;
+		}
+
+	};
+
+	Node* root;
+	int N = 0;
+
+	// private methods that the user ( in this case the user is obviously a programmer ) shouldnt have access to
+	void add( Node* temp, dt value) {
+		if (temp->value >= value) {
+			if (temp->left == nullptr){
+				Node* newNode = new Node(value);
+				temp->left = newNode;
+			}
+			else
+			{
+				add(temp->left, value);
+			}
+		}
+
+		else {
+			if (temp->right == nullptr) {
+				Node* newNode = new Node(value);
+				temp->right = newNode;
+			}
+			else
+			{
+				add(temp->right, value);
+			}
+		}
+	}
+	dt getMax(Node* temp) {
+		if (temp->right == NULL) {
+			return temp->value;
+		}
+		getMax(temp->right);
+	}
+
+	dt getMin(Node* temp) {
+		if (temp->left == NULL) {
+			return temp->value;
+		}
+		getMin(temp->left);
+	}
+
+	int getHeight(Node* temp) {
+		if (temp == NULL) {
+			return -1;
+		}
+
+		int leftSubTree = getHeight(temp->left);
+		int rightSubTree = getHeight(temp->right);
+
+		return 1 + max(leftSubTree, rightSubTree);
+	}
+
+	void pot(Node* n) {
+		if (n != NULL) {
+			cout << n->value << " ";
+			pot(n->left);
+			pot(n->right);
+		}
+
+	}
+
+	void iot(Node* n) {
+		if (n != NULL) {
+			iot(n->left);
+			cout << n->value << " ";
+			iot(n->right);
+		}
+	}
+
+	void oot(Node* n) {
+		if (n != NULL) {
+			oot(n->left);
+			oot(n->right);
+			cout << n->value << " ";
+		}
+	}
+
+	bool recursiveSearch(Node* n, dt v) {
+		if (n == NULL) {
+			return false;
+		}
+		else if (n->value == v)
+			return true;
+
+		if (v > n->value)
+			return (recursiveSearch(n->right, v));
+		
+		return recursiveSearch(n->left,v);
+
+	}
+
+	Node* getAddressOfTarget(Node* n, dt val) {
+		if (n->value == val)
+			return n;
+		else if (n->value >= val) {
+			return getAddressOfTarget(n->left, val);
+		}
+		return getAddressOfTarget(n->right, val);
+	}
+
+	Node* getAddressOfParent(Node* n, dt val) {
+		Node* parent= NULL;
+		while (n->value != val) {
+			parent = n;
+			if (val > n->value) {
+				n = n->right;
+			}
+			else {
+				n = n->left;
+			}
+		}
+
+		return parent;
+	}
+
+	char direction(Node* parent, Node* child) {
+		return (parent->right == child ? 'r' : 'l');
+	}
+
+	int numOfChildren(Node* n) {
+		if (n->right == NULL && n->left == NULL)
+			return 0;
+		else if ((n->right == NULL) != (n->left == NULL))
+			return 1;
+		return 2;
+	}
+
+
+			// end of private methods
+
+
+public:
+										/*______Essentials______*/
+	BinaryTree(){
+		root = NULL;
+	}
+
+	bool isEmpty() {
+		return N == 0 ? true: false;
+	}
+
+	int size() {
+		return N;
+	}
+
+	int height() {
+		return getHeight(root);
+	}
+
+											/*______Insertion______*/
+
+	void insert(dt val) {
+		
+		Node* newNode = new Node(val);
+
+
+		if (isEmpty()) {
+			root = newNode;
+		}
+
+		else {
+			Node* temp = root;
+			Node* parent  = temp;
+			while (temp != nullptr) {
+				parent = temp;
+
+				if (val <= temp->value) {
+
+					temp = temp->left;
+				}
+				else if (val > temp->value) {
+					temp = temp->right;
+				}
+			}
+
+			if (val > parent->value)
+			{
+				parent->right = newNode;
+			}
+			else {
+				parent->left = newNode;
+			}
+			delete temp;
+
+		}
+		N++;
+	}
+
+												/*__Insertion Using recursion___*/
+
+	void recursiveInsertion(dt val) {		// inserting elements to the tree using recursion instead of a while loop ( both work properly, recursion is more professional)
+		
+		
+		if (isEmpty()) {
+			Node* newNode = new Node(val);
+			root = newNode;
+		}
+
+		else
+		{
+			add(root, val);
+		}
+		N++;
+	}
+
+												/*______print______*/
+
+	// depth first traverse
+
+	void preOrderTraverse() {
+		pot(root);
+	}
+
+	void inOrderTraverse() {
+		iot(root);
+	}
+
+	void postOrderTraverse() {
+		oot(root);
+	}
+
+	// breadth first traverse
+
+	void bft() {
+		if (root == nullptr) {
+			return;
+		}
+		queue <Node*> values;
+		values.push(root);
+		Node* temp = root;
+		
+		while (!values.empty()) {
+			temp = values.front();
+			cout << temp->value << " ";
+			values.pop();
+			if(temp->left != nullptr)
+				values.push(temp->left);
+
+			if(temp->right != nullptr)
+				values.push(temp->right);
+		}
+
+	}
+
+	void getRoot() {
+		cout << root->value;
+	}
+
+									/*___delete elements___*/
+
+	void remove(dt val) {
+		if (!search(val))
+			return;
+		Node* POtarget = getAddressOfParent(root, val);
+		Node* target = getAddressOfTarget(root, val);
+		char relation = direction(POtarget, target);
+
+
+		int children = numOfChildren(target);
+
+		switch (children) {
+		case 0: {
+			if (relation == 'r') {
+				POtarget->right = NULL;
+			}
+			else
+			{
+				POtarget->left = NULL;
+			}
+		}
+		case 1: {
+			Node* successor = target->right == NULL ? target->left : target->right;
+			relation == 'r' ? POtarget->right = successor: POtarget->left = successor;
+			target = NULL;
+			break;
+		}
+		case 2: {
+			Node* successor = getAddressOfTarget(target->right,getMin(target->right));
+			Node* POsuccessor = getAddressOfParent(target->right, getMin(target->right));
+			relation = direction(POsuccessor, successor);
+			target->value = successor->value;
+
+			relation == 'r' ? POsuccessor->right = NULL : POsuccessor->left = NULL;
+			
+			break;
+		}
+		}
+		
+
+		N--;
+
+	}
+
+
+
+
+
+											/*Other Functions*/
+
+	dt max1() {		// maximum value using a while loop
+		Node* temp = root;
+		while (temp->right != NULL) {
+			temp = temp->right;
+		}
+
+		return temp->value;
+	}
+
+	dt max2() {			// maximum value recursively
+		return getMax(root);
+	}
+
+	dt min1() {			// minimum value using a while loop
+		Node* temp = root;
+		while (temp->left != NULL) {
+			temp = temp->left;
+		}
+
+		return temp->value;
+	}
+
+	dt min2() {			// minimum value using recursion
+		return getMin(root);
+	}
+	dt min3() {			// minimum value using recursion
+		return getMin(root->right);
+	}
+
+
+	bool search(dt v){	// basic while loop method	(returns wether the element is within the tree or not )
+		Node* c = root;
+		bool found = false;
+		while (c != NULL) {
+			if (c->value == v) {
+				found = true;
+				break;
+			}
+			else if (v > c->value) {
+				c = c->right;
+			}
+			else
+			{
+				c = c->left;
+			}
+				
+		}
+		return found;
+	}
+
+	bool search2(dt v) {		// recursive method, recursiveSearch body is private
+		return recursiveSearch(root, v);
+	}
+
+
+
+	Node* rootAddress() {
+		return root;
+	}
+
+   
+};
+
+
+
+
+int main() {
+
+	BinaryTree <int> bst;
+	bst.insert(50);
+	bst.insert(20);
+	bst.insert(60);
+	bst.insert(65);
+	bst.insert(55);
+	bst.insert(56);
+	bst.insert(24);
+	bst.insert(23);
+	bst.insert(13);
+	bst.insert(10);
+	bst.insert(15);
+	bst.insert(22);
+
+	bst.remove(20) ;
+
+	bst.preOrderTraverse();
+
+	return 0;
+}
