@@ -6,9 +6,9 @@ using namespace std;
 
 template<class dt>
 
-// NOTE 1:   most, if not all of the methods where the root is given as a parameter are to ensure that the recursion works with an address for each cycle
-// NOTE 2:	 some methods are written within the private scope, so the user cant have access to them
-
+// NOTE 1:	most, if not all of the methods where the root is given as a parameter are to ensure that the recursion works with an address for each cycle
+// NOTE 2:	some methods are written within the private scope, so the user cant have access to them
+// NOTE 3: 	Files system on computers is a perfect example for the uses of a binary tree
 
 class BinaryTree {
 private:
@@ -17,7 +17,7 @@ private:
 		dt value;
 		Node* right;
 		Node* left;
-		bool isAnc = false;		// helps checking for common ancestor ( isAnc = is Ancestor )
+		bool isAnc = false;		// helps checking for a common ancestor ( isAnc = is Ancestor )
 
 		Node(dt value) {			// constructor
 			this->value = value;	// "this" refers to the object... so this lines means, the value of the object is equal to the value passed (the one in the brackets)
@@ -179,7 +179,8 @@ public:
 		return getHeight(root);
 	}
 
-	bool related(Node* n1, Node* n2) {
+	bool related(Node* n1, Node* n2) { 	// this is a useless method, IGNORE IT
+	
 		return (n1->right == n2 || n1->left == n2 || n2->right == n1 || n2->left == n1);
 	}
 
@@ -281,7 +282,8 @@ public:
  *
  * @return the height of the tree.
  */
-	void bft() {
+ 
+	void bft() {		// bft => breadth first traverse
 		if (root == nullptr) {
 			return;
 		}
@@ -397,7 +399,8 @@ public:
 	dt min2() {			// minimum value using recursion
 		return getMin(root);
 	}
-	dt min3() {			// minimum value using recursion
+	
+	dt min3() {			// minimum value using recursion	( used for debugging purposes and it belongs to the private methods, IGNORE IT )
 		return getMin(root->right);
 	}
 
