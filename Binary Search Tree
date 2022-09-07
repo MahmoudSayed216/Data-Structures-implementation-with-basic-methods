@@ -8,7 +8,7 @@ template<class dt>
 
 // NOTE 1:	most, if not all of the methods where the root is given as a parameter are to ensure that the recursion works with an address for each cycle
 // NOTE 2:	some methods are written within the private scope, so the user cant have access to them
-// NOTE 3: 	Files system on computers is a perfect example for the uses of a binary tree
+// NOTE 3: 	Files system on computers is a perfect example for the uses of a tree generally ( not a binary one ) - check this link https://people.cs.ksu.edu/~schmidt/300s05/Lectures/Week7b.html - 
 
 class BinaryTree {
 private:
@@ -447,7 +447,7 @@ public:
 	 * @param v2 the value of the second node
 	 * @return The address of the first common ancestor of the two nodes.
 	 */
-	Node* commonAncestor(dt v1, dt v2) {
+	Node* commonAncestor(dt v1, dt v2) {	// -check this link for more info: https://stackoverflow.com/questions/14865081/algorithm-to-find-lowest-common-ancestor-in-directed-acyclic-graph - 
 
 		Node* n1 = getAddressOfTarget(root, v1);
 		Node* n2 = getAddressOfTarget(root, v2);
