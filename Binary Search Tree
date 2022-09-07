@@ -1,13 +1,13 @@
 #include<iostream>
 #include<queue>
+#include<vector>
 using namespace std;
 
 
 template<class dt>
 
 // NOTE 1:   most, if not all of the methods where the root is given as a parameter are to ensure that the recursion works with an address for each cycle
-// NOTE 2:	 some methods are written within the private scope, so the user (programmer) cant have access to them
-// NOTE 3:   there are shorter yet more complex implementations of the delete method, the one in this code is more detailed
+// NOTE 2:	 some methods are written within the private scope, so the user cant have access to them
 
 
 class BinaryTree {
@@ -17,6 +17,7 @@ private:
 		dt value;
 		Node* right;
 		Node* left;
+		bool isAnc = false;		// helps checking for common ancestor ( isAnc = is Ancestor )
 
 		Node(dt value) {			// constructor
 			this->value = value;	// "this" refers to the object... so this lines means, the value of the object is equal to the value passed (the one in the brackets)
@@ -30,9 +31,9 @@ private:
 	int N = 0;
 
 	// private methods that the user ( in this case the user is obviously a programmer ) shouldnt have access to
-	void add( Node* temp, dt value) {
+	void add(Node* temp, dt value) {
 		if (temp->value >= value) {
-			if (temp->left == nullptr){
+			if (temp->left == nullptr) {
 				Node* newNode = new Node(value);
 				temp->left = newNode;
 			}
@@ -112,8 +113,8 @@ private:
 
 		if (v > n->value)
 			return (recursiveSearch(n->right, v));
-		
-		return recursiveSearch(n->left,v);
+
+		return recursiveSearch(n->left, v);
 
 	}
 
@@ -127,7 +128,7 @@ private:
 	}
 
 	Node* getAddressOfParent(Node* n, dt val) {
-		Node* parent= NULL;
+		Node* parent = NULL;
 		while (n->value != val) {
 			parent = n;
 			if (val > n->value) {
@@ -154,17 +155,20 @@ private:
 	}
 
 
-			// end of private methods
+
+
+
+	// end of private methods
 
 
 public:
-										/*______Essentials______*/
-	BinaryTree(){
+	/*______Essentials______*/
+	BinaryTree() {
 		root = NULL;
 	}
 
 	bool isEmpty() {
-		return N == 0 ? true: false;
+		return N == 0 ? true : false;
 	}
 
 	int size() {
@@ -175,10 +179,28 @@ public:
 		return getHeight(root);
 	}
 
-											/*______Insertion______*/
+	bool related(Node* n1, Node* n2) {
+		return (n1->right == n2 || n1->left == n2 || n2->right == n1 || n2->left == n1);
+	}
 
+	bool isParentOf(Node* parent, Node* Child) {
+		return (parent->right == Child) || (parent->left == Child);
+	}
+
+
+
+	/*______Insertion______*/
+
+
+// AI generated comment 
+/**
+ * If the tree is empty, the new node becomes the root. Otherwise, the new node is inserted as a leaf
+ * in the appropriate position
+ *
+ * @param val the value to be inserted
+ */
 	void insert(dt val) {
-		
+
 		Node* newNode = new Node(val);
 
 
@@ -188,7 +210,7 @@ public:
 
 		else {
 			Node* temp = root;
-			Node* parent  = temp;
+			Node* parent = temp;
 			while (temp != nullptr) {
 				parent = temp;
 
@@ -214,11 +236,11 @@ public:
 		N++;
 	}
 
-												/*__Insertion Using recursion___*/
+	/*__Insertion Using recursion___*/
 
 	void recursiveInsertion(dt val) {		// inserting elements to the tree using recursion instead of a while loop ( both work properly, recursion is more professional)
-		
-		
+
+
 		if (isEmpty()) {
 			Node* newNode = new Node(val);
 			root = newNode;
@@ -231,9 +253,9 @@ public:
 		N++;
 	}
 
-												/*______print______*/
+	/*______print______*/
 
-	// depth first traverse
+// depth first traverse
 
 	void preOrderTraverse() {
 		pot(root);
@@ -249,6 +271,16 @@ public:
 
 	// breadth first traverse
 
+
+// AI generated comment 
+/**
+ * We use a queue to store the nodes of the tree and then we print the value of the node at the front
+ * of the queue and then we pop it out of the queue. Then we check if the node has a left child and if
+ * it does, we push it into the queue. Then we check if the node has a right child and if it does, we
+ * push it into the queue. We keep doing this until the queue is empty
+ *
+ * @return the height of the tree.
+ */
 	void bft() {
 		if (root == nullptr) {
 			return;
@@ -256,15 +288,15 @@ public:
 		queue <Node*> values;
 		values.push(root);
 		Node* temp = root;
-		
+
 		while (!values.empty()) {
 			temp = values.front();
 			cout << temp->value << " ";
 			values.pop();
-			if(temp->left != nullptr)
+			if (temp->left != nullptr)
 				values.push(temp->left);
 
-			if(temp->right != nullptr)
+			if (temp->right != nullptr)
 				values.push(temp->right);
 		}
 
@@ -274,13 +306,26 @@ public:
 		cout << root->value;
 	}
 
-									/*___delete elements___*/
+	/*___delete elements___*/
 
+
+// AI generated comment 
+/**
+ * The function first checks if the value exists in the tree, if it does, it gets the address of the
+ * parent of the node to be deleted, then it gets the address of the node to be deleted, then it
+ * checks the relation of the node to be deleted with its parent, then it checks the number of
+ * children of the node to be deleted, then it deletes the node based on the number of children
+ *
+ * @param val the value to be removed
+ *
+ * @return The address of the parent of the node that contains the value.
+ */
 	void remove(dt val) {
 		if (!search(val))
 			return;
 		Node* POtarget = getAddressOfParent(root, val);
-		Node* target = getAddressOfTarget(root, val);
+		Node* target = (POtarget->right->value == val) ? POtarget->right : POtarget->left;
+
 		char relation = direction(POtarget, target);
 
 
@@ -298,22 +343,24 @@ public:
 		}
 		case 1: {
 			Node* successor = target->right == NULL ? target->left : target->right;
-			relation == 'r' ? POtarget->right = successor: POtarget->left = successor;
+			relation == 'r' ? POtarget->right = successor : POtarget->left = successor;
 			target = NULL;
 			break;
 		}
 		case 2: {
-			Node* successor = getAddressOfTarget(target->right,getMin(target->right));
-			Node* POsuccessor = getAddressOfParent(target->right, getMin(target->right));
+			dt minValue = getMin(target->right);
+			Node* POsuccessor = getAddressOfParent(target->right, minValue);
+			Node* successor = POsuccessor->left;
+			cout << successor->value;
 			relation = direction(POsuccessor, successor);
 			target->value = successor->value;
 
 			relation == 'r' ? POsuccessor->right = NULL : POsuccessor->left = NULL;
-			
+
 			break;
 		}
 		}
-		
+
 
 		N--;
 
@@ -323,7 +370,7 @@ public:
 
 
 
-											/*Other Functions*/
+	/*Other Functions*/
 
 	dt max1() {		// maximum value using a while loop
 		Node* temp = root;
@@ -355,7 +402,7 @@ public:
 	}
 
 
-	bool search(dt v){	// basic while loop method	(returns wether the element is within the tree or not )
+	bool search(dt v) {	// basic while loop method	(returns wether the element is within the tree or not )
 		Node* c = root;
 		bool found = false;
 		while (c != NULL) {
@@ -370,7 +417,7 @@ public:
 			{
 				c = c->left;
 			}
-				
+
 		}
 		return found;
 	}
@@ -385,7 +432,66 @@ public:
 		return root;
 	}
 
-   
+
+	// Modified AI comment:
+	/*
+	 * We first check if one of the nodes is a parent of the other. If so, we return the parent of the parent.
+	 * If not, we find the ancestors of the first node and mark them as such.
+	 * Then we check for any common ancestors by
+	 * iterating through the ancestors of node 2 and check if any of them is marked as an ancestor If not, we return NULL
+	 *
+	 * @param v1 the value of the first node
+	 * @param v2 the value of the second node
+	 * @return The address of the first common ancestor of the two nodes.
+	 */
+	Node* commonAncestor(dt v1, dt v2) {
+
+		Node* n1 = getAddressOfTarget(root, v1);
+		Node* n2 = getAddressOfTarget(root, v2);
+		if (isParentOf(n1, n2)) {
+			return getAddressOfParent(root, n1->value);
+		}
+		else if (isParentOf(n2, n1))
+		{
+			return getAddressOfParent(root, n2->value);
+		}
+
+
+		vector <Node*> nodes;
+		Node* FCA = NULL;
+
+		Node* temp = getAddressOfTarget(root, v1);
+		do {
+			nodes.push_back(temp);
+			temp->isAnc = true;
+			temp = getAddressOfParent(root, temp->value);
+		} while (temp != root);
+		root->isAnc = true;
+		nodes.push_back(root);
+
+		Node* checker = getAddressOfParent(root, v2);
+
+		while (checker != root) {
+			if (checker->isAnc) {
+				FCA = checker;
+				break;
+			}
+			checker = getAddressOfParent(root, checker->value);
+		}
+		if (checker->isAnc) {
+			FCA = checker;
+		}
+
+		for (auto& element : nodes) {
+			element->isAnc = false;
+		}
+
+		return FCA;
+	}
+
+
+
+
 };
 
 
@@ -407,9 +513,7 @@ int main() {
 	bst.insert(15);
 	bst.insert(22);
 
-	bst.remove(20) ;
-
-	bst.preOrderTraverse();
+	cout << bst.commonAncestor(56, 55)->value;
 
 	return 0;
 }
